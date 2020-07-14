@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Stack Hash Daemon</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>textarea</h2>
+  <p>plaintext here</p>
+  <div class="form-group">
+        <textarea id="plaintext" class="form-control" rows="5"></textarea>
+  </div>
+  <p>hash here <span id="microsecond" style="color:red;">[execution speed(ms)?]</span></p>
+  <div class="form-group">
+    <textarea id="hash" class="form-control" rows="5"></textarea>
+  </div>
+
+  <button type="button" class="btn btn-danger hashnow" value="md5">md5</button>
+  <button type="button" class="btn btn-danger hashnow" value="sha1">sha1</button>
+  <button type="button" class="btn btn-danger hashnow" value="sha256">sha256</button>
+  <button type="button" class="btn btn-danger hashnow" value="sha384">sha384</button>
+  <button type="button" class="btn btn-danger hashnow" value="sha512">sha512</button>
+  <button type="button" class="btn btn-danger hashnow" value="whirlpool">whirlpool</button>
+  <button type="button" class="btn btn-danger hashnow" value="snefru">snefru</button>
+  <button type="button" class="btn btn-danger hashnow" value="gost">gost</button>
+  <button type="button" class="btn btn-danger hashnow" value="mod10">mod10</button>
+
+  <div>
+  <h2>history</h2>
+  <div id="history">
+
+  </div>
+  </div>
+
+</div>
+
+<div class="container">
+<h2>speed test?</h2>
+<p>
+  <button id='startbutton'>
+    start</button>
+  <button id='stopbutton'>
+    stop</button>
+  <br> status: <span id='status'>
+</p>
+<div id='logdiv'>
+</div>
+
+</div>
+
+</body>
+</html>
+<script type="text/javascript" src="https://www.dslreports.com/assets/st/1.6/js/speedtest.js?v12"></script>
+<script>
+
+  $( document ).ready(function() {
+
+    $('button.hashnow').click(function() {
+                var hashtype = this.value;
+                var plaintext = $('#plaintext').val();
+
+                $.post("hash.php",
+                {
+          hashtype: hashtype,
+          plaintext: plaintext
+        },
+        function(data){
+          var json = JSON.parse(data);
+          $("#hash").text(json.hash);
+          $("#microsecond").text("[execution speed(ms)="+json.time+"]");
+          $("#history").append("<p style='border-style:dotted; padding:5px;'><span class=type>type:</span>" + hashtype + " <span class=plaintext>plaintext:</span>" + plaintext + " <span class=hash>hash:</span>"+ json.hash + " <span class=time>execute time:</span>"+ json.time +"</p>");
+                  setRandomColor();
+        });
+
+        });
+
+        function getRandomColor() {
+          var letters = '0123456789ABCDEF';
+          var color = '#';
+          for (var i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+        function setRandomColor() {
+                $(".type").css("color", getRandomColor());
+                $(".plaintext").css("color", getRandomColor());
+                $(".hash").css("color", getRandomColor());
+                $(".time").css("color", getRandomColor());
+        }
+  });
+</script>
